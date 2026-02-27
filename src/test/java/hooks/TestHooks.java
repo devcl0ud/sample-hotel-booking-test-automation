@@ -22,7 +22,7 @@ public class TestHooks {
                 .response();
 
         assertEquals("Health check failed!", 200, response.getStatusCode());
-        assertEquals("status needs to be up.", STATUS.get("status"), response.jsonPath().getString("status"));
+        assertEquals("status needs to be up", STATUS.get("status"), response.jsonPath().getString("status"));
 
     }
 }
