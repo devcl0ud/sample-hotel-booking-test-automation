@@ -1,3 +1,10 @@
+# Author: Ritu Dubbani
+# Created: 2026-02-27
+# Version: 1.1
+# Email: ritudubbani@gmail.com
+# Description: Feature file for hotel booking API test automation (create, retrieve, update, delete bookings).
+# Tags: @booking-api @automation
+
 Feature: Hotel booking test automation
 
   Scenario: New Hotel booking
