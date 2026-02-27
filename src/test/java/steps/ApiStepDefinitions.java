@@ -6,7 +6,6 @@ import io.cucumber.java.en.*;
 import io.restassured.response.Response;
 import utils.RequestBuilder;
 
-import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -23,6 +22,28 @@ public class ApiStepDefinitions {
         response = RequestBuilder.json()
                 .body(jsonBody)
                 .post(endpoint)
+                .then()
+                .extract()
+                .response();
+    }
+
+    @When("request to update same booking at {string} with content:")
+    public void update_booking(String endpoint, String jsonBody) {
+        response = RequestBuilder.json()
+                .header("Cookie", "token=" + this.adminToken)
+                .body(jsonBody)
+                .put(endpoint + "/"  + BookingContext.getInstance().getBookingId())
+                .then()
+                .extract()
+                .response();
+    }
+
+    @When("request to update partially last booking at {string} with content:")
+    public void update_partially_booking(String endpoint, String jsonBody) {
+        response = RequestBuilder.json()
+                .header("Cookie", "token=" + this.adminToken)
+                .body(jsonBody)
+                .patch(endpoint + "/"  + BookingContext.getInstance().getBookingId())
                 .then()
                 .extract()
                 .response();
@@ -46,6 +67,12 @@ public class ApiStepDefinitions {
         assertEquals(lastnameValue, response.jsonPath().getString(lastnameKey));
     }
 
+
+    @Then("the response should contain the same {string}")
+    public void verify_booking_id(String key) {
+        assertEquals(BookingContext.getInstance().getBookingId(), response.jsonPath().getInt(key));
+    }
+
     @When("request to delete last booking at {string}")
     public void delete_booking(String endpoint) {
         response = RequestBuilder.json()
@@ -56,7 +83,17 @@ public class ApiStepDefinitions {
                 .response();
     }
 
-    @Given("Generate the valid token")
+    @When("request to get last booking at {string}")
+    public void retrieve_booking(String endpoint) {
+        response = RequestBuilder.json()
+                .header("Cookie", "token=" + this.adminToken)
+                .get(endpoint + "/"  + BookingContext.getInstance().getBookingId())
+                .then()
+                .extract()
+                .response();
+    }
+
+    @Given("generate the valid token")
     public void generate_token(){
         String endpoint = "/auth/login";
         int validStatusCode = 200;
