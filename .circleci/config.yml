@@ -1,0 +1,44 @@
+version: 2.1
+
+jobs:
+  run-api-tests:
+    docker:
+      - image: cimg/openjdk:17.0   # Java 17 image
+
+    environment:
+      MAVEN_OPTS: -Xmx1024m
+
+    steps:
+      - checkout
+
+      # Restore Maven cache
+      - restore_cache:
+          keys:
+            - maven-{{ checksum "pom.xml" }}
+            - maven-
+
+      # Install dependencies
+      - run:
+          name: Install dependencies
+          command: mvn dependency:go-offline
+
+      # Save Maven cache
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: maven-{{ checksum "pom.xml" }}
+
+      # Run tests with environment variables
+      - run:
+          name: Run API Tests
+          command: |
+            mvn clean test \
+              -DAPI_KEY="$API_KEY" \
+              -DENV="$ENV"
+
+workflows:
+  version: 2
+  api-test-workflow:
+    jobs:
+      - run-api-tests:
+          context: api-secrets
